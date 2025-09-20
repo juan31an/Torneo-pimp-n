@@ -806,6 +806,9 @@
             <button class="btn btn-success" onclick="finishMatch()" style="padding: 15px 40px; font-size: 1.2em;">
                 🏆 Finalizar Partido
             </button>
+            <button class="btn btn-warning" onclick="showManualScoreModal()" style="padding: 15px 30px; font-size: 1.1em; margin-left: 10px;">
+                ✏️ Establecer Resultado
+            </button>
         </div>
 
         <div id="funny-message" class="funny-message" style="display: none;"></div>
@@ -875,7 +878,7 @@
             <div style="margin-top: 20px;">
                 <input type="text" id="player-name-input" placeholder="Nombre del jugador" 
                        style="padding: 12px; border: 2px solid var(--light); border-radius: 10px; margin-right: 10px; width: 250px;">
-                <button class="btn" onclick="addPlayer()">➕ Agregar Jugador</button>
+                <button class="btn" onclick="addPlayer()">�Plus; Agregar Jugador</button>
             </div>
             <div id="players-list" style="margin-top: 20px;"></div>
         </div>
@@ -945,6 +948,36 @@
                 <input type="file" id="photo-input" accept="image/*" onchange="handlePhotoUpload(event)">
             </div>
             <div id="photo-preview" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para establecer resultado manual -->
+<div id="score-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeScoreModal()">&times;</span>
+        <h3>✏️ Establecer Resultado Manual</h3>
+        <div style="margin-top: 20px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div style="text-align: center;">
+                    <h4 id="manual-player1-name">Jugador 1</h4>
+                    <input type="number" id="manual-score1" min="0" max="99" value="0" 
+                           style="width: 100px; padding: 10px; font-size: 1.5em; text-align: center; border: 2px solid var(--primary); border-radius: 10px;">
+                </div>
+                <div style="text-align: center;">
+                    <h4 id="manual-player2-name">Jugador 2</h4>
+                    <input type="number" id="manual-score2" min="0" max="99" value="0" 
+                           style="width: 100px; padding: 10px; font-size: 1.5em; text-align: center; border: 2px solid var(--secondary); border-radius: 10px;">
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <button class="btn btn-success" onclick="applyManualScore()">
+                    ✅ Aplicar Resultado
+                </button>
+                <button class="btn btn-danger" onclick="closeScoreModal()" style="margin-left: 10px;">
+                    ❌ Cancelar
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -1313,7 +1346,77 @@
     // Subir foto
     function uploadPhoto(player) {
         appState.currentPhotoPlayer = player;
-        document.getElementById('photo-modal').style.display = 'block';
+        // Mostrar modal mejorado para selección de jugador
+        showPhotoUploadModal();
+    }
+
+    // Mostrar modal de subida de foto mejorado
+    function showPhotoUploadModal() {
+        const modal = document.getElementById('photo-modal');
+        const modalContent = modal.querySelector('.modal-content');
+        
+        // Obtener el nombre del jugador actual
+        const playerName = appState.currentMatch[appState.currentPhotoPlayer];
+        
+        modalContent.innerHTML = `
+            <span class="close" onclick="closePhotoModal()">&times;</span>
+            <h3>📸 Actualizar Foto de ${playerName}</h3>
+            <div style="text-align: center; margin-top: 20px;">
+                <div class="file-input-wrapper">
+                    <label for="photo-input">Seleccionar Foto</label>
+                    <input type="file" id="photo-input" accept="image/*" onchange="handlePhotoUpload(event)">
+                </div>
+                <div id="photo-preview" style="margin-top: 20px;"></div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h4>O selecciona otro jugador:</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-top: 10px;">
+                    ${appState.players.map(p => `
+                        <button class="btn btn-small" onclick="changePhotoPlayer('${p}')" 
+                                style="${p === playerName ? 'background: var(--primary);' : ''}">
+                            ${p}
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        modal.style.display = 'block';
+    }
+
+    // Cambiar jugador para foto
+    function changePhotoPlayer(playerName) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    appState.playerPhotos[playerName] = e.target.result;
+                    saveData();
+                    updateDisplay();
+                    updatePlayerSelector();
+                    
+                    // Mostrar preview
+                    const preview = document.getElementById('photo-preview');
+                    preview.innerHTML = `
+                        <div style="text-align: center;">
+                            <p style="font-weight: bold; color: var(--primary);">Foto actualizada para ${playerName}</p>
+                            <img src="${e.target.result}" style="max-width: 200px; border-radius: 10px; margin-top: 10px;">
+                        </div>
+                    `;
+                    
+                    setTimeout(() => {
+                        closePhotoModal();
+                    }, 1500);
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        input.click();
     }
 
     // Manejar subida de foto
@@ -1330,11 +1433,16 @@
                 
                 // Mostrar preview
                 const preview = document.getElementById('photo-preview');
-                preview.innerHTML = `<img src="${e.target.result}" style="max-width: 200px; border-radius: 10px;">`;
+                preview.innerHTML = `
+                    <div style="text-align: center;">
+                        <p style="font-weight: bold; color: var(--primary);">Foto actualizada para ${playerName}</p>
+                        <img src="${e.target.result}" style="max-width: 200px; border-radius: 10px; margin-top: 10px;">
+                    </div>
+                `;
                 
                 setTimeout(() => {
                     closePhotoModal();
-                }, 1000);
+                }, 1500);
             };
             reader.readAsDataURL(file);
         }
@@ -1503,22 +1611,6 @@
         updatePlayersList();
         updatePlayerSelector();
         showMessage(`Jugador ${name} agregado exitosamente`, 'success');
-    }
-
-    // Actualizar lista de jugadores
-    function updatePlayersList() {
-        const container = document.getElementById('players-list');
-        container.innerHTML = '<h4>Jugadores Activos:</h4>' + 
-            appState.players.map(player => `
-                <div style="display: inline-block; margin: 5px;">
-                    <span style="padding: 10px 18px; background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); border-radius: 25px; margin-right: 10px; font-weight: 600;">
-                        ${player}
-                    </span>
-                    ${appState.players.length > 3 ? 
-                        `<button class="btn btn-small btn-danger" onclick="removePlayer('${player}')">✖</button>` : 
-                        ''}
-                </div>
-            `).join('');
     }
 
     // Remover jugador
@@ -2038,12 +2130,110 @@
         }
     }
 
+    // Mostrar modal para resultado manual
+    function showManualScoreModal() {
+        const match = appState.currentMatch;
+        document.getElementById('manual-player1-name').textContent = match.player1;
+        document.getElementById('manual-player2-name').textContent = match.player2;
+        document.getElementById('manual-score1').value = match.score1;
+        document.getElementById('manual-score2').value = match.score2;
+        document.getElementById('score-modal').style.display = 'block';
+    }
+
+    // Cerrar modal de resultado
+    function closeScoreModal() {
+        document.getElementById('score-modal').style.display = 'none';
+    }
+
+    // Aplicar resultado manual
+    function applyManualScore() {
+        const score1 = parseInt(document.getElementById('manual-score1').value);
+        const score2 = parseInt(document.getElementById('manual-score2').value);
+        
+        appState.currentMatch.score1 = score1;
+        appState.currentMatch.score2 = score2;
+        
+        saveData();
+        updateDisplay();
+        closeScoreModal();
+        showMessage('✅ Resultado establecido correctamente', 'success');
+    }
+
+    // Actualizar lista de jugadores mejorada
+    function updatePlayersList() {
+        const container = document.getElementById('players-list');
+        container.innerHTML = `
+            <h4>Jugadores Activos:</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                ${appState.players.map(player => {
+                    const photoUrl = appState.playerPhotos[player];
+                    const stats = appState.playerStats[player] || { wins: 0, losses: 0 };
+                    const total = stats.wins + stats.losses;
+                    const winRate = total > 0 ? Math.round((stats.wins / total) * 100) : 0;
+                    
+                    return `
+                        <div style="background: white; border-radius: 15px; padding: 15px; border: 2px solid var(--light); box-shadow: 0 3px 10px rgba(0,0,0,0.05); transition: all 0.3s;">
+                            <div style="text-align: center;">
+                                <div style="width: 80px; height: 80px; margin: 0 auto 10px; border-radius: 50%; background: ${photoUrl ? `url(${photoUrl})` : 'linear-gradient(135deg, var(--primary), var(--secondary))'}; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; color: white; font-size: 2em; cursor: pointer;" onclick="uploadPhotoForPlayer('${player}')">
+                                    ${!photoUrl ? player.charAt(0).toUpperCase() : ''}
+                                </div>
+                                <h5 style="margin: 10px 0; color: var(--dark);">${player}</h5>
+                                <div style="font-size: 0.9em; color: #666;">
+                                    ${stats.wins}V - ${stats.losses}D (${winRate}%)
+                                </div>
+                                <div style="margin-top: 10px;">
+                                    <button class="btn btn-small" onclick="uploadPhotoForPlayer('${player}')" style="padding: 5px 10px; font-size: 0.8em;">
+                                        📷 Foto
+                                    </button>
+                                    ${appState.players.length > 3 ? 
+                                        `<button class="btn btn-small btn-danger" onclick="removePlayer('${player}')" style="margin-left: 5px; padding: 5px 10px; font-size: 0.8em;">✖</button>` : 
+                                        ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
+
+    // Subir foto para un jugador específico
+    function uploadPhotoForPlayer(playerName) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    appState.playerPhotos[playerName] = e.target.result;
+                    saveData();
+                    updateDisplay();
+                    updatePlayersList();
+                    updatePlayerSelector();
+                    showMessage(`📸 Foto actualizada para ${playerName}`, 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        input.click();
+    }
+
     // Prevenir cierre de modal al hacer clic fuera
     window.onclick = function(event) {
         if (event.target.className === 'modal') {
             event.target.style.display = 'none';
         }
     }
+
+    // Agregar listener para teclas de escape
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closePhotoModal();
+            closeScoreModal();
+        }
+    });
 </script>
 ```
 
