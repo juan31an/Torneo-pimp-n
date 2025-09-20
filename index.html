@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏓 Torneo de Ping Pong Épico</title>
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #4CAF50;
+            --warning: #ffc107;
+            --danger: #FF6B6B;
+            --dark: #2d3748;
+            --light: #f7fafc;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+```
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        min-height: 100vh;
+        padding: 20px;
+        color: var(--dark);
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 30px;
+        animation: slideDown 0.5s ease;
+    }
+
+    .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .header p {
+        font-size: 1.1em;
+        opacity: 0.95;
+    }
+
+    .card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: var(--shadow);
+        animation: fadeIn 0.5s ease;
+    }
+
+    .match-display {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-wrap: wrap;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .player-section {
+        text-align: center;
+        flex: 1;
+        min-width: 150px;
+        padding: 15px;
+    }
+
+    .player-photo {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin: 0 auto 10px;
+        border: 4px solid var(--primary);
+        object-fit: cover;
+        cursor: pointer;
+        transition: transform 0.3s;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3em;
+    }
+
+    .player-photo:hover {
+        transform: scale(1.05);
+    }
+
+    .player-name {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: var(--dark);
+        margin-bottom: 10px;
+    }
+
+    .score-display {
+        font-size: 3em;
+        font-weight: bold;
+        color: var(--primary);
+        margin: 10px 0;
+    }
+
+    .score-controls {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: all 0.3s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .btn:hover {
+        background: var(--secondary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .btn-small {
+        padding: 5px 10px;
+        font-size: 0.9em;
+    }
+
+    .btn-success {
+        background: var(--success);
+    }
+
+    .btn-danger {
+        background: var(--danger);
+    }
+
+    .btn-warning {
+        background: var(--warning);
+        color: var(--dark);
+    }
+
+    .waiting-player {
+        text-align: center;
+        padding: 20px;
+        background: var(--light);
+        border-radius: 10px;
+        margin-top: 20px;
+    }
+
+    .waiting-player h3 {
+        color: var(--secondary);
+        margin-bottom: 10px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        border-left: 4px solid var(--primary);
+    }
+
+    .stat-card h4 {
+        color: var(--secondary);
+        margin-bottom: 5px;
+        font-size: 0.9em;
+    }
+
+    .stat-card .value {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: var(--primary);
+    }
+
+    .history-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .history-table th {
+        background: var(--primary);
+        color: white;
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    .history-table td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .history-table tr:hover {
+        background: #f7fafc;
+    }
+
+    .winner {
+        color: var(--success);
+        font-weight: bold;
+    }
+
+    .loser {
+        color: var(--danger);
+    }
+
+    .player-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .player-stat-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        border: 2px solid var(--light);
+        transition: all 0.3s;
+    }
+
+    .player-stat-card:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+    }
+
+    .player-stat-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--light);
+    }
+
+    .win-rate {
+        font-size: 1.5em;
+        font-weight: bold;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        animation: fadeIn 0.3s;
+    }
+
+    .modal-content {
+        background-color: white;
+        margin: 10% auto;
+        padding: 30px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 500px;
+        animation: slideUp 0.3s;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close:hover {
+        color: var(--danger);
+    }
+
+    .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--light);
+    }
+
+    .tab {
+        padding: 10px 20px;
+        cursor: pointer;
+        border: none;
+        background: none;
+        font-size: 1em;
+        color: var(--dark);
+        transition: all 0.3s;
+    }
+
+    .tab.active {
+        color: var(--primary);
+        border-bottom: 3px solid var(--primary);
+        margin-bottom: -2px;
+    }
+
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.5s;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        margin-top: 10px;
+    }
+
+    .file-input-wrapper input[type=file] {
+        position: absolute;
+        left: -9999px;
+    }
+
+    .file-input-wrapper label {
+        background: var(--primary);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: inline-block;
+        transition: all 0.3s;
+    }
+
+    .file-input-wrapper label:hover {
+        background: var(--secondary);
+    }
+
+    .message {
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+        animation: slideUp 0.5s;
+    }
+
+    .message.success {
+        background: #c6f6d5;
+        color: #22543d;
+        border-left: 4px solid var(--success);
+    }
+
+    .message.error {
+        background: #fed7d7;
+        color: #742a2a;
+        border-left: 4px solid var(--danger);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideDown {
+        from { 
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideUp {
+        from { 
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .header h1 {
+            font-size: 1.8em;
+        }
+
+        .score-display {
+            font-size: 2em;
+        }
+
+        .match-display {
+            flex-direction: column;
+        }
+
+        .player-section {
+            margin-bottom: 20px;
+        }
+    }
+
+    .funny-message {
+        background: linear-gradient(135deg, #FF6B6B 0%, #ffc107 100%);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+        text-align: center;
+        font-size: 1.1em;
+        animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+
+    .export-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏓 Torneo de Ping Pong Épico</h1>
+            <p id="tournament-status">El torneo más intenso de la oficina</p>
+        </div>
+
+```
+    <!-- Partido Actual -->
+    <div class="card">
+        <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary);">⚔️ Partido en Curso</h2>
+        
+        <div class="match-display">
+            <div class="player-section">
+                <div class="player-photo" id="player1-photo" onclick="uploadPhoto('player1')">👤</div>
+                <div class="player-name" id="player1-name">Jugador 1</div>
+                <div class="score-display" id="player1-score">0</div>
+                <div class="score-controls">
+                    <button class="btn btn-small btn-success" onclick="updateScore('player1', 1)">+1</button>
+                    <button class="btn btn-small btn-danger" onclick="updateScore('player1', -1)">-1</button>
+                <div style="margin-top: 30px;">
+                <h4>🔧 Depuración</h4>
+                <button class="btn" onclick="showDebugInfo()">
+                    Ver Estado Actual
+                </button>
+                <button class="btn" onclick="fixData()">
+                    🔧 Reparar Datos
+                </button>
+            </div>
+            </div>
+
+            <div style="font-size: 3em; color: var(--secondary);">VS</div>
+
+            <div class="player-section">
+                <div class="player-photo" id="player2-photo" onclick="uploadPhoto('player2')">👤</div>
+                <div class="player-name" id="player2-name">Jugador 2</div>
+                <div class="score-display" id="player2-score">0</div>
+                <div class="score-controls">
+                    <button class="btn btn-small btn-success" onclick="updateScore('player2', 1)">+1</button>
+                    <button class="btn btn-small btn-danger" onclick="updateScore('player2', -1)">-1</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="waiting-player">
+            <h3>🔄 Próximo Jugador</h3>
+            <div class="player-name" id="waiting-player">Esperando...</div>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn btn-success" onclick="finishMatch()" style="padding: 12px 30px; font-size: 1.1em;">
+                🏆 Finalizar Partido
+            </button>
+        </div>
+
+        <div id="funny-message" class="funny-message" style="display: none;"></div>
+    </div>
+
+    <!-- Pestañas -->
+    <div class="card">
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('stats')">📊 Estadísticas</button>
+            <button class="tab" onclick="showTab('history')">📜 Historial</button>
+            <button class="tab" onclick="showTab('players')">👥 Jugadores</button>
+            <button class="tab" onclick="showTab('settings')">⚙️ Configuración</button>
+        </div>
+
+        <!-- Estadísticas -->
+        <div id="stats-tab" class="tab-content active">
+            <h3>Estadísticas Generales</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>👑 Rey del Torneo</h4>
+                    <div class="value" id="top-player">-</div>
+                    <small id="top-player-wins">0 victorias</small>
+                </div>
+                <div class="stat-card">
+                    <h4>🔥 Mejor Racha</h4>
+                    <div class="value" id="best-streak-player">-</div>
+                    <small id="best-streak-count">0 partidos</small>
+                </div>
+                <div class="stat-card">
+                    <h4>🏓 Partidos Totales</h4>
+                    <div class="value" id="total-matches">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>🎯 Puntos Totales</h4>
+                    <div class="value" id="total-points">0</div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px;">Estadísticas por Jugador</h3>
+            <div id="player-stats" class="player-stats"></div>
+        </div>
+
+        <!-- Historial -->
+        <div id="history-tab" class="tab-content">
+            <h3>Últimos Partidos</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Ganador</th>
+                        <th>Perdedor</th>
+                        <th>Resultado</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table-body">
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #999;">No hay partidos registrados</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Jugadores -->
+        <div id="players-tab" class="tab-content">
+            <h3>Gestión de Jugadores</h3>
+            <div style="margin-top: 20px;">
+                <input type="text" id="player-name-input" placeholder="Nombre del jugador" 
+                       style="padding: 10px; border: 2px solid var(--light); border-radius: 8px; margin-right: 10px;">
+                <button class="btn" onclick="addPlayer()">➕ Agregar Jugador</button>
+            </div>
+            <div id="players-list" style="margin-top: 20px;"></div>
+        </div>
+
+        <!-- Configuración -->
+        <div id="settings-tab" class="tab-content">
+            <h3>Configuración del Torneo</h3>
+            
+            <div style="margin-top: 20px;">
+                <h4>📥 Importar Datos</h4>
+                <p style="color: #666; margin: 10px 0;">Importa un archivo JSON previamente exportado</p>
+                <div class="file-input-wrapper">
+                    <label for="import-file">Seleccionar archivo JSON</label>
+                    <input type="file" id="import-file" accept=".json" onchange="importData(event)">
+                </div>
+                <div style="margin-top: 10px;">
+                    <button class="btn btn-warning" onclick="downloadSampleFile()">
+                        📄 Descargar Archivo de Ejemplo
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <h4>📤 Exportar Datos</h4>
+                <div class="export-buttons">
+                    <button class="btn btn-success" onclick="exportData('json')">
+                        💾 Exportar JSON
+                    </button>
+                    <button class="btn btn-warning" onclick="exportData('csv')">
+                        📊 Exportar CSV
+                    </button>
+                    <button class="btn" onclick="exportData('html')">
+                        📄 Exportar HTML
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <h4>🔄 Resetear Torneo</h4>
+                <p style="color: #666; margin: 10px 0;">Esta acción borrará todos los datos del torneo.</p>
+                <button class="btn btn-danger" onclick="resetTournament()">
+                    ⚠️ Resetear Todo
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para subir foto -->
+<div id="photo-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closePhotoModal()">&times;</span>
+        <h3>📸 Actualizar Foto del Jugador</h3>
+        <div style="text-align: center; margin-top: 20px;">
+            <div class="file-input-wrapper">
+                <label for="photo-input">Seleccionar Foto</label>
+                <input type="file" id="photo-input" accept="image/*" onchange="handlePhotoUpload(event)">
+            </div>
+            <div id="photo-preview" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Estado de la aplicación
+    let appState = {
+        players: ['Jesús', 'Rubén', 'Juan Francisco'],
+        currentMatch: {
+            player1: '',
+            player2: '',
+            score1: 0,
+            score2: 0,
+            waiting: ''
+        },
+        history: [],
+        playerPhotos: {},
+        playerStats: {},
+        currentPhotoPlayer: null
+    };
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', function() {
+        loadData();
+        initializeMatch();
+        updateDisplay();
+        updateStats();
+        updateHistory();
+        updatePlayersList();
+    });
+
+    // Cargar datos del localStorage
+    function loadData() {
+        const savedData = localStorage.getItem('pingpongTournament');
+        if (savedData) {
+            try {
+                const data = JSON.parse(savedData);
+                appState = { ...appState, ...data };
+            } catch (e) {
+                console.error('Error loading data:', e);
+            }
+        }
+    }
+
+    // Guardar datos en localStorage
+    function saveData() {
+        localStorage.setItem('pingpongTournament', JSON.stringify(appState));
+    }
+
+    // Inicializar partido
+    function initializeMatch() {
+        if (!appState.currentMatch.player1) {
+            const shuffled = shuffleArray([...appState.players]);
+            appState.currentMatch = {
+                player1: shuffled[0],
+                player2: shuffled[1],
+                score1: 0,
+                score2: 0,
+                waiting: shuffled[2]
+            };
+            saveData();
+        }
+    }
+
+    // Actualizar puntuación
+    function updateScore(player, delta) {
+        if (player === 'player1') {
+            appState.currentMatch.score1 = Math.max(0, appState.currentMatch.score1 + delta);
+        } else {
+            appState.currentMatch.score2 = Math.max(0, appState.currentMatch.score2 + delta);
+        }
+        saveData();
+        updateDisplay();
+    }
+
+    // Finalizar partido
+    function finishMatch() {
+        const match = appState.currentMatch;
+        
+        if (match.score1 === 0 && match.score2 === 0) {
+            showMessage('¡El partido debe tener al menos un punto!', 'error');
+            return;
+        }
+
+        // Determinar ganador y perdedor
+        let winner, loser, winnerScore, loserScore;
+        if (match.score1 > match.score2) {
+            winner = match.player1;
+            loser = match.player2;
+            winnerScore = match.score1;
+            loserScore = match.score2;
+        } else if (match.score2 > match.score1) {
+            winner = match.player2;
+            loser = match.player1;
+            winnerScore = match.score2;
+            loserScore = match.score1;
+        } else {
+            showMessage('¡El partido no puede terminar en empate!', 'error');
+            return;
+        }
+
+        // Guardar en historial
+        const now = new Date();
+        appState.history.push({
+            winner: winner,
+            loser: loser,
+            winnerScore: winnerScore,
+            loserScore: loserScore,
+            date: now.toLocaleDateString('es-ES'),
+            time: now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+        });
+
+        // Actualizar estadísticas
+        updatePlayerStatistics(winner, loser, winnerScore, loserScore);
+
+        // Mostrar mensaje divertido
+        showFunnyMessage(winner, loser, winnerScore, loserScore);
+
+        // Preparar siguiente partido (el ganador se queda)
+        appState.currentMatch = {
+            player1: winner,
+            player2: match.waiting,
+            score1: 0,
+            score2: 0,
+            waiting: loser
+        };
+
+        saveData();
+        updateDisplay();
+        updateStats();
+        updateHistory();
+        
+        showMessage(`🏆 ¡${winner} ha ganado ${winnerScore}-${loserScore}!`, 'success');
+    }
+
+    // Actualizar estadísticas del jugador
+    function updatePlayerStatistics(winner, loser, winnerScore, loserScore) {
+        // Inicializar estadísticas si no existen
+        if (!appState.playerStats[winner]) {
+            appState.playerStats[winner] = {
+                wins: 0, losses: 0, pointsFor: 0, pointsAgainst: 0,
+                currentStreak: 0, bestStreak: 0
+            };
+        }
+        if (!appState.playerStats[loser]) {
+            appState.playerStats[loser] = {
+                wins: 0, losses: 0, pointsFor: 0, pointsAgainst: 0,
+                currentStreak: 0, bestStreak: 0
+            };
+        }
+
+        // Actualizar estadísticas del ganador
+        const winnerStats = appState.playerStats[winner];
+        winnerStats.wins++;
+        winnerStats.pointsFor += winnerScore;
+        winnerStats.pointsAgainst += loserScore;
+        winnerStats.currentStreak++;
+        winnerStats.bestStreak = Math.max(winnerStats.bestStreak, winnerStats.currentStreak);
+
+        // Actualizar estadísticas del perdedor
+        const loserStats = appState.playerStats[loser];
+        loserStats.losses++;
+        loserStats.pointsFor += loserScore;
+        loserStats.pointsAgainst += winnerScore;
+        loserStats.currentStreak = 0;
+    }
+
+    // Actualizar visualización
+    function updateDisplay() {
+        const match = appState.currentMatch;
+        
+        document.getElementById('player1-name').textContent = match.player1;
+        document.getElementById('player2-name').textContent = match.player2;
+        document.getElementById('player1-score').textContent = match.score1;
+        document.getElementById('player2-score').textContent = match.score2;
+        document.getElementById('waiting-player').textContent = match.waiting;
+
+        // Actualizar fotos
+        updatePlayerPhoto('player1', match.player1);
+        updatePlayerPhoto('player2', match.player2);
+    }
+
+    // Actualizar foto del jugador
+    function updatePlayerPhoto(position, playerName) {
+        const photoElement = document.getElementById(`${position}-photo`);
+        if (appState.playerPhotos[playerName]) {
+            photoElement.style.backgroundImage = `url(${appState.playerPhotos[playerName]})`;
+            photoElement.style.backgroundSize = 'cover';
+            photoElement.style.backgroundPosition = 'center';
+            photoElement.textContent = '';
+        } else {
+            photoElement.style.backgroundImage = '';
+            photoElement.textContent = '👤';
+        }
+    }
+
+    // Subir foto
+    function uploadPhoto(player) {
+        appState.currentPhotoPlayer = player;
+        document.getElementById('photo-modal').style.display = 'block';
+    }
+
+    // Manejar subida de foto
+    function handlePhotoUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const playerName = appState.currentMatch[appState.currentPhotoPlayer];
+                appState.playerPhotos[playerName] = e.target.result;
+                saveData();
+                updateDisplay();
+                
+                // Mostrar preview
+                const preview = document.getElementById('photo-preview');
+                preview.innerHTML = `<img src="${e.target.result}" style="max-width: 200px; border-radius: 10px;">`;
+                
+                setTimeout(() => {
+                    closePhotoModal();
+                }, 1000);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Cerrar modal de foto
+    function closePhotoModal() {
+        document.getElementById('photo-modal').style.display = 'none';
+        document.getElementById('photo-preview').innerHTML = '';
+        document.getElementById('photo-input').value = '';
+    }
+
+    // Actualizar estadísticas
+    function updateStats() {
+        const stats = calculateStats();
+        
+        document.getElementById('top-player').textContent = stats.topPlayer || '-';
+        document.getElementById('top-player-wins').textContent = `${stats.topPlayerWins} victorias`;
+        document.getElementById('best-streak-player').textContent = stats.bestStreakPlayer || '-';
+        document.getElementById('best-streak-count').textContent = `${stats.bestStreakCount} partidos`;
+        document.getElementById('total-matches').textContent = appState.history.length;
+        document.getElementById('total-points').textContent = stats.totalPoints;
+
+        // Actualizar estadísticas por jugador
+        updatePlayerStatsDisplay();
+    }
+
+    // Calcular estadísticas
+    function calculateStats() {
+        let topPlayer = null;
+        let topPlayerWins = 0;
+        let bestStreakPlayer = null;
+        let bestStreakCount = 0;
+        let totalPoints = 0;
+
+        // Calcular puntos totales
+        appState.history.forEach(match => {
+            totalPoints += match.winnerScore + match.loserScore;
+        });
+
+        // Encontrar mejores jugadores
+        Object.entries(appState.playerStats).forEach(([player, stats]) => {
+            if (stats.wins > topPlayerWins) {
+                topPlayer = player;
+                topPlayerWins = stats.wins;
+            }
+            if (stats.bestStreak > bestStreakCount) {
+                bestStreakPlayer = player;
+                bestStreakCount = stats.bestStreak;
+            }
+        });
+
+        return {
+            topPlayer,
+            topPlayerWins,
+            bestStreakPlayer,
+            bestStreakCount,
+            totalPoints
+        };
+    }
+
+    // Actualizar visualización de estadísticas por jugador
+    function updatePlayerStatsDisplay() {
+        const container = document.getElementById('player-stats');
+        container.innerHTML = '';
+
+        appState.players.forEach(player => {
+            const stats = appState.playerStats[player] || {
+                wins: 0, losses: 0, pointsFor: 0, pointsAgainst: 0,
+                currentStreak: 0, bestStreak: 0
+            };
+
+            const total = stats.wins + stats.losses;
+            const winRate = total > 0 ? Math.round((stats.wins / total) * 100) : 0;
+            const pointsDiff = stats.pointsFor - stats.pointsAgainst;
+
+            const card = document.createElement('div');
+            card.className = 'player-stat-card';
+            card.innerHTML = `
+                <div class="player-stat-header">
+                    <h4>${player}</h4>
+                    <div class="win-rate" style="color: ${winRate >= 50 ? 'var(--success)' : 'var(--danger)'}">
+                        ${winRate}%
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>Victorias</h4>
+                        <div class="value">${stats.wins}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Derrotas</h4>
+                        <div class="value">${stats.losses}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Puntos +/-</h4>
+                        <div class="value" style="color: ${pointsDiff >= 0 ? 'var(--success)' : 'var(--danger)'}">
+                            ${pointsDiff > 0 ? '+' : ''}${pointsDiff}
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Racha Actual</h4>
+                        <div class="value">${stats.currentStreak}</div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // Actualizar historial
+    function updateHistory() {
+        const tbody = document.getElementById('history-table-body');
+        
+        if (appState.history.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">No hay partidos registrados</td></tr>';
+            return;
+        }
+
+        // Mostrar últimos 10 partidos
+        const recentMatches = appState.history.slice(-10).reverse();
+        tbody.innerHTML = recentMatches.map(match => `
+            <tr>
+                <td class="winner">${match.winner}</td>
+                <td class="loser">${match.loser}</td>
+                <td>${match.winnerScore} - ${match.loserScore}</td>
+                <td>${match.date}</td>
+                <td>${match.time}</td>
+            </tr>
+        `).join('');
+    }
+
+    // Mostrar pestaña
+    function showTab(tabName) {
+        // Ocultar todas las pestañas
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+
+        // Mostrar pestaña seleccionada
+        document.getElementById(`${tabName}-tab`).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    // Agregar jugador
+    function addPlayer() {
+        const input = document.getElementById('player-name-input');
+        const name = input.value.trim();
+        
+        if (!name) {
+            showMessage('Por favor ingresa un nombre', 'error');
+            return;
+        }
+
+        if (appState.players.includes(name)) {
+            showMessage('Este jugador ya existe', 'error');
+            return;
+        }
+
+        appState.players.push(name);
+        input.value = '';
+        saveData();
+        updatePlayersList();
+        showMessage(`Jugador ${name} agregado exitosamente`, 'success');
+    }
+
+    // Actualizar lista de jugadores
+    function updatePlayersList() {
+        const container = document.getElementById('players-list');
+        container.innerHTML = '<h4>Jugadores Activos:</h4>' + 
+            appState.players.map(player => `
+                <div style="display: inline-block; margin: 5px;">
+                    <span style="padding: 8px 15px; background: var(--light); border-radius: 20px; margin-right: 10px;">
+                        ${player}
+                    </span>
+                    ${appState.players.length > 3 ? 
+                        `<button class="btn btn-small btn-danger" onclick="removePlayer('${player}')">✖</button>` : 
+                        ''}
+                </div>
+            `).join('');
+    }
+
+    // Remover jugador
+    function removePlayer(player) {
+        if (appState.players.length <= 3) {
+            showMessage('Debe haber al menos 3 jugadores', 'error');
+            return;
+        }
+
+        // Verificar si el jugador está en el partido actual
+        const match = appState.currentMatch;
+        if (player === match.player1 || player === match.player2 || player === match.waiting) {
+            showMessage('No se puede eliminar un jugador que está en el partido actual', 'error');
+            return;
+        }
+
+        if (confirm(`¿Estás seguro de eliminar a ${player}?`)) {
+            appState.players = appState.players.filter(p => p !== player);
+            saveData();
+            updatePlayersList();
+            showMessage(`Jugador ${player} eliminado`, 'success');
+        }
+    }
+
+    // Resetear torneo
+    function resetTournament() {
+        if (confirm('⚠️ ¿Estás seguro de que quieres BORRAR TODOS los datos del torneo?\n\nEsta acción no se puede deshacer.')) {
+            appState = {
+                players: ['Jesús', 'Rubén', 'Juan Francisco'],
+                currentMatch: {
+                    player1: '',
+                    player2: '',
+                    score1: 0,
+                    score2: 0,
+                    waiting: ''
+                },
+                history: [],
+                playerPhotos: {},
+                playerStats: {}
+            };
+            
+            saveData();
+            initializeMatch();
+            updateDisplay();
+            updateStats();
+            updateHistory();
+            updatePlayersList();
+            
+            showMessage('✅ Torneo reiniciado exitosamente', 'success');
+        }
+    }
+
+    // Exportar datos
+    function exportData(format) {
+        const data = {
+            tournament: 'Ping Pong Tournament',
+            exportDate: new Date().toISOString(),
+            players: appState.players,
+            currentMatch: appState.currentMatch,
+            history: appState.history,
+            playerStats: appState.playerStats,
+            playerPhotos: appState.playerPhotos
+        };
+
+        if (format === 'json') {
+            const jsonStr = JSON.stringify(data, null, 2);
+            downloadFile(jsonStr, 'tournament-data.json', 'application/json');
+        } else if (format === 'csv') {
+            let csv = 'Winner,Loser,Winner Score,Loser Score,Date,Time\n';
+            appState.history.forEach(match => {
+                csv += `${match.winner},${match.loser},${match.winnerScore},${match.loserScore},${match.date},${match.time}\n`;
+            });
+            downloadFile(csv, 'tournament-history.csv', 'text/csv');
+        } else if (format === 'html') {
+            const html = generateHTMLReport(data);
+            downloadFile(html, 'tournament-report.html', 'text/html');
+        }
+
+        showMessage(`Datos exportados en formato ${format.toUpperCase()}`, 'success');
+    }
+
+    // Generar reporte HTML
+    function generateHTMLReport(data) {
+        const stats = calculateStats();
+        
+        return `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Reporte del Torneo de Ping Pong</title>
+                <meta charset="UTF-8">
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    h1 { color: #667eea; }
+                    table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    th { background: #667eea; color: white; }
+                    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
+                    .stat-box { background: #f0f0f0; padding: 15px; border-radius: 8px; }
+                </style>
+            </head>
+            <body>
+                <h1>🏓 Reporte del Torneo de Ping Pong</h1>
+                <p>Fecha de exportación: ${new Date().toLocaleString('es-ES')}</p>
+                
+                <h2>Estadísticas Generales</h2>
+                <div class="stats">
+                    <div class="stat-box">
+                        <strong>Rey del Torneo:</strong><br>${stats.topPlayer || '-'} (${stats.topPlayerWins} victorias)
+                    </div>
+                    <div class="stat-box">
+                        <strong>Mejor Racha:</strong><br>${stats.bestStreakPlayer || '-'} (${stats.bestStreakCount} partidos)
+                    </div>
+                    <div class="stat-box">
+                        <strong>Total de Partidos:</strong><br>${data.history.length}
+                    </div>
+                    <div class="stat-box">
+                        <strong>Total de Puntos:</strong><br>${stats.totalPoints}
+                    </div>
+                </div>
+                
+                <h2>Historial de Partidos</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ganador</th>
+                            <th>Perdedor</th>
+                            <th>Resultado</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.history.map(match => `
+                            <tr>
+                                <td>${match.winner}</td>
+                                <td>${match.loser}</td>
+                                <td>${match.winnerScore} - ${match.loserScore}</td>
+                                <td>${match.date}</td>
+                                <td>${match.time}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                
+                <h2>Estadísticas por Jugador</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Jugador</th>
+                            <th>Victorias</th>
+                            <th>Derrotas</th>
+                            <th>% Victoria</th>
+                            <th>Puntos +/-</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.players.map(player => {
+                            const stats = data.playerStats[player] || { wins: 0, losses: 0, pointsFor: 0, pointsAgainst: 0 };
+                            const total = stats.wins + stats.losses;
+                            const winRate = total > 0 ? Math.round((stats.wins / total) * 100) : 0;
+                            const pointsDiff = stats.pointsFor - stats.pointsAgainst;
+                            return `
+                                <tr>
+                                    <td>${player}</td>
+                                    <td>${stats.wins}</td>
+                                    <td>${stats.losses}</td>
+                                    <td>${winRate}%</td>
+                                    <td>${pointsDiff > 0 ? '+' : ''}${pointsDiff}</td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            </body>
+            </html>
+        `;
+    }
+
+    // Importar datos
+    function importData(event) {
+        const file = event.target.files[0];
+        if (!file) {
+            showMessage('No se seleccionó ningún archivo', 'error');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                console.log('Datos importados:', data);
+                
+                // Verificar estructura del archivo
+                let imported = false;
+                
+                // Si es un export completo con estructura esperada
+                if (data.tournament === 'Ping Pong Tournament') {
+                    if (data.players) appState.players = data.players;
+                    if (data.currentMatch) appState.currentMatch = data.currentMatch;
+                    if (data.history) appState.history = data.history;
+                    if (data.playerStats) appState.playerStats = data.playerStats;
+                    if (data.playerPhotos) appState.playerPhotos = data.playerPhotos;
+                    imported = true;
+                } 
+                // Si es un backup directo del localStorage
+                else if (data.players || data.currentMatch || data.history) {
+                    if (data.players) appState.players = data.players;
+                    if (data.currentMatch) appState.currentMatch = data.currentMatch;
+                    if (data.history) appState.history = data.history;
+                    if (data.playerStats) appState.playerStats = data.playerStats;
+                    if (data.playerPhotos) appState.playerPhotos = data.playerPhotos;
+                    imported = true;
+                }
+                // Intentar importar como datos crudos
+                else {
+                    appState = { ...appState, ...data };
+                    imported = true;
+                }
+                
+                if (imported) {
+                    // Verificar que hay al menos 3 jugadores
+                    if (!appState.players || appState.players.length < 3) {
+                        appState.players = ['Jesús', 'Rubén', 'Juan Francisco'];
+                    }
+                    
+                    // Verificar partido actual
+                    if (!appState.currentMatch || !appState.currentMatch.player1) {
+                        initializeMatch();
+                    }
+                    
+                    // Inicializar arrays si no existen
+                    if (!appState.history) appState.history = [];
+                    if (!appState.playerStats) appState.playerStats = {};
+                    if (!appState.playerPhotos) appState.playerPhotos = {};
+                    
+                    saveData();
+                    updateDisplay();
+                    updateStats();
+                    updateHistory();
+                    updatePlayersList();
+                    
+                    showMessage('✅ Datos importados exitosamente', 'success');
+                } else {
+                    showMessage('Formato de archivo no reconocido', 'error');
+                }
+            } catch (error) {
+                showMessage('Error al procesar el archivo: ' + error.message, 'error');
+                console.error('Import error:', error);
+            }
+        };
+        
+        reader.onerror = function() {
+            showMessage('Error al leer el archivo', 'error');
+        };
+        
+        reader.readAsText(file);
+        
+        // Limpiar el input para permitir reimportar el mismo archivo
+        event.target.value = '';
+    }
+
+    // Descargar archivo
+    function downloadFile(content, filename, mimeType) {
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // Mostrar mensaje
+    function showMessage(text, type = 'success') {
+        const existing = document.querySelector('.message');
+        if (existing) {
+            existing.remove();
+        }
+
+        const message = document.createElement('div');
+        message.className = `message ${type}`;
+        message.textContent = text;
+        
+        const container = document.querySelector('.card');
+        container.appendChild(message);
+
+        setTimeout(() => {
+            message.remove();
+        }, 3000);
+    }
+
+    // Mostrar mensaje divertido
+    function showFunnyMessage(winner, loser, winnerScore, loserScore) {
+        const messages = [
+            `¡${winner} ha humillado a ${loser} ${winnerScore}-${loserScore}! 😱`,
+            `${winner} le dio una clase magistral a ${loser} 🎓`,
+            `${loser} necesitará terapia después de esta paliza ${winnerScore}-${loserScore} 💔`,
+            `¡${winner} está en llamas! ${loser} se fue a llorar al baño 😢`,
+            `Resultado: ${winner} ${winnerScore} - ${loserScore} ${loser}. ${loser} pide la revancha inmediata 🥊`,
+            `${winner} celebra como si hubiera ganado el mundial. ${loser} planea su venganza 😈`,
+            `¡Partidazo! ${winner} sobrevive ${winnerScore}-${loserScore} contra ${loser} 💪`,
+            `${loser} dice que la raqueta estaba rota... Sí, claro 🙄`,
+            `${winner} le dedicó la victoria a su mamá. ${loser} llamó a la suya llorando 📞`
+        ];
+
+        const message = messages[Math.floor(Math.random() * messages.length)];
+        const element = document.getElementById('funny-message');
+        element.textContent = message;
+        element.style.display = 'block';
+
+        setTimeout(() => {
+            element.style.display = 'none';
+        }, 5000);
+    }
+
+    // Descargar archivo de ejemplo
+    function downloadSampleFile() {
+        const sampleData = {
+            tournament: 'Ping Pong Tournament',
+            exportDate: new Date().toISOString(),
+            players: ['Jesús', 'Rubén', 'Juan Francisco', 'María', 'Carlos'],
+            currentMatch: {
+                player1: 'Jesús',
+                player2: 'Rubén',
+                score1: 5,
+                score2: 3,
+                waiting: 'Juan Francisco'
+            },
+            history: [
+                {
+                    winner: 'Jesús',
+                    loser: 'Carlos',
+                    winnerScore: 11,
+                    loserScore: 7,
+                    date: '20/01/2024',
+                    time: '14:30'
+                },
+                {
+                    winner: 'Rubén',
+                    loser: 'María',
+                    winnerScore: 11,
+                    loserScore: 9,
+                    date: '20/01/2024',
+                    time: '15:00'
+                }
+            ],
+            playerStats: {
+                'Jesús': {
+                    wins: 5,
+                    losses: 2,
+                    pointsFor: 65,
+                    pointsAgainst: 45,
+                    currentStreak: 2,
+                    bestStreak: 3
+                },
+                'Rubén': {
+                    wins: 4,
+                    losses: 3,
+                    pointsFor: 58,
+                    pointsAgainst: 52,
+                    currentStreak: 1,
+                    bestStreak: 2
+                },
+                'Juan Francisco': {
+                    wins: 3,
+                    losses: 4,
+                    pointsFor: 50,
+                    pointsAgainst: 55,
+                    currentStreak: 0,
+                    bestStreak: 2
+                }
+            },
+            playerPhotos: {}
+        };
+        
+        const jsonStr = JSON.stringify(sampleData, null, 2);
+        downloadFile(jsonStr, 'sample-tournament-data.json', 'application/json');
+        showMessage('Archivo de ejemplo descargado', 'success');
+    }
+
+    // Función auxiliar para mezclar array
+    function shuffleArray(array) {
+        const newArray = [...array];
+        for (let i = newArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+        }
+        return newArray;
+    }
+
+    // Mostrar información de depuración
+    function showDebugInfo() {
+        console.log('Estado actual de la aplicación:', appState);
+        console.log('Datos en localStorage:', localStorage.getItem('pingpongTournament'));
+        alert('Estado actual enviado a la consola. Presiona F12 para ver los detalles.');
+    }
+
+    // Reparar datos corruptos
+    function fixData() {
+        try {
+            // Asegurar estructura mínima
+            if (!appState.players || !Array.isArray(appState.players) || appState.players.length < 3) {
+                appState.players = ['Jesús', 'Rubén', 'Juan Francisco'];
+            }
+            
+            if (!appState.history || !Array.isArray(appState.history)) {
+                appState.history = [];
+            }
+            
+            if (!appState.playerStats || typeof appState.playerStats !== 'object') {
+                appState.playerStats = {};
+            }
+            
+            if (!appState.playerPhotos || typeof appState.playerPhotos !== 'object') {
+                appState.playerPhotos = {};
+            }
+            
+            if (!appState.currentMatch || typeof appState.currentMatch !== 'object') {
+                appState.currentMatch = {
+                    player1: '',
+                    player2: '',
+                    score1: 0,
+                    score2: 0,
+                    waiting: ''
+                };
+            }
+            
+            // Reinicializar partido si es necesario
+            if (!appState.currentMatch.player1 || !appState.currentMatch.player2 || !appState.currentMatch.waiting) {
+                const shuffled = shuffleArray([...appState.players]);
+                appState.currentMatch = {
+                    player1: shuffled[0],
+                    player2: shuffled[1],
+                    score1: appState.currentMatch.score1 || 0,
+                    score2: appState.currentMatch.score2 || 0,
+                    waiting: shuffled[2]
+                };
+            }
+            
+            saveData();
+            updateDisplay();
+            updateStats();
+            updateHistory();
+            updatePlayersList();
+            
+            showMessage('✅ Datos reparados exitosamente', 'success');
+        } catch (error) {
+            console.error('Error al reparar datos:', error);
+            showMessage('Error al reparar datos: ' + error.message, 'error');
+        }
+    }
+
+    // Prevenir cierre de modal al hacer clic fuera
+    window.onclick = function(event) {
+        if (event.target.className === 'modal') {
+            event.target.style.display = 'none';
+        }
+    }
+</script>
+```
+
+</body>
+</html>
