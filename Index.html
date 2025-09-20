@@ -467,7 +467,15 @@
                 <div class="score-controls">
                     <button class="btn btn-small btn-success" onclick="updateScore('player1', 1)">+1</button>
                     <button class="btn btn-small btn-danger" onclick="updateScore('player1', -1)">-1</button>
-                </div>
+                <div style="margin-top: 30px;">
+                <h4>🔧 Depuración</h4>
+                <button class="btn" onclick="showDebugInfo()">
+                    Ver Estado Actual
+                </button>
+                <button class="btn" onclick="fixData()">
+                    🔧 Reparar Datos
+                </button>
+            </div>
             </div>
 
             <div style="font-size: 3em; color: var(--secondary);">VS</div>
@@ -572,9 +580,15 @@
             
             <div style="margin-top: 20px;">
                 <h4>📥 Importar Datos</h4>
+                <p style="color: #666; margin: 10px 0;">Importa un archivo JSON previamente exportado</p>
                 <div class="file-input-wrapper">
                     <label for="import-file">Seleccionar archivo JSON</label>
                     <input type="file" id="import-file" accept=".json" onchange="importData(event)">
+                </div>
+                <div style="margin-top: 10px;">
+                    <button class="btn btn-warning" onclick="downloadSampleFile()">
+                        📄 Descargar Archivo de Ejemplo
+                    </button>
                 </div>
             </div>
 
@@ -1078,7 +1092,8 @@
             players: appState.players,
             currentMatch: appState.currentMatch,
             history: appState.history,
-            playerStats: appState.playerStats
+            playerStats: appState.playerStats,
+            playerPhotos: appState.playerPhotos
         };
 
         if (format === 'json') {
@@ -1199,17 +1214,59 @@
     // Importar datos
     function importData(event) {
         const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    
+        if (!file) {
+            showMessage('No se seleccionó ningún archivo', 'error');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                console.log('Datos importados:', data);
+                
+                // Verificar estructura del archivo
+                let imported = false;
+                
+                // Si es un export completo con estructura esperada
+                if (data.tournament === 'Ping Pong Tournament') {
                     if (data.players) appState.players = data.players;
                     if (data.currentMatch) appState.currentMatch = data.currentMatch;
                     if (data.history) appState.history = data.history;
                     if (data.playerStats) appState.playerStats = data.playerStats;
                     if (data.playerPhotos) appState.playerPhotos = data.playerPhotos;
+                    imported = true;
+                } 
+                // Si es un backup directo del localStorage
+                else if (data.players || data.currentMatch || data.history) {
+                    if (data.players) appState.players = data.players;
+                    if (data.currentMatch) appState.currentMatch = data.currentMatch;
+                    if (data.history) appState.history = data.history;
+                    if (data.playerStats) appState.playerStats = data.playerStats;
+                    if (data.playerPhotos) appState.playerPhotos = data.playerPhotos;
+                    imported = true;
+                }
+                // Intentar importar como datos crudos
+                else {
+                    appState = { ...appState, ...data };
+                    imported = true;
+                }
+                
+                if (imported) {
+                    // Verificar que hay al menos 3 jugadores
+                    if (!appState.players || appState.players.length < 3) {
+                        appState.players = ['Jesús', 'Rubén', 'Juan Francisco'];
+                    }
+                    
+                    // Verificar partido actual
+                    if (!appState.currentMatch || !appState.currentMatch.player1) {
+                        initializeMatch();
+                    }
+                    
+                    // Inicializar arrays si no existen
+                    if (!appState.history) appState.history = [];
+                    if (!appState.playerStats) appState.playerStats = {};
+                    if (!appState.playerPhotos) appState.playerPhotos = {};
                     
                     saveData();
                     updateDisplay();
@@ -1218,13 +1275,23 @@
                     updatePlayersList();
                     
                     showMessage('✅ Datos importados exitosamente', 'success');
-                } catch (error) {
-                    showMessage('Error al importar los datos', 'error');
-                    console.error('Import error:', error);
+                } else {
+                    showMessage('Formato de archivo no reconocido', 'error');
                 }
-            };
-            reader.readAsText(file);
-        }
+            } catch (error) {
+                showMessage('Error al procesar el archivo: ' + error.message, 'error');
+                console.error('Import error:', error);
+            }
+        };
+        
+        reader.onerror = function() {
+            showMessage('Error al leer el archivo', 'error');
+        };
+        
+        reader.readAsText(file);
+        
+        // Limpiar el input para permitir reimportar el mismo archivo
+        event.target.value = '';
     }
 
     // Descargar archivo
@@ -1283,6 +1350,71 @@
         }, 5000);
     }
 
+    // Descargar archivo de ejemplo
+    function downloadSampleFile() {
+        const sampleData = {
+            tournament: 'Ping Pong Tournament',
+            exportDate: new Date().toISOString(),
+            players: ['Jesús', 'Rubén', 'Juan Francisco', 'María', 'Carlos'],
+            currentMatch: {
+                player1: 'Jesús',
+                player2: 'Rubén',
+                score1: 5,
+                score2: 3,
+                waiting: 'Juan Francisco'
+            },
+            history: [
+                {
+                    winner: 'Jesús',
+                    loser: 'Carlos',
+                    winnerScore: 11,
+                    loserScore: 7,
+                    date: '20/01/2024',
+                    time: '14:30'
+                },
+                {
+                    winner: 'Rubén',
+                    loser: 'María',
+                    winnerScore: 11,
+                    loserScore: 9,
+                    date: '20/01/2024',
+                    time: '15:00'
+                }
+            ],
+            playerStats: {
+                'Jesús': {
+                    wins: 5,
+                    losses: 2,
+                    pointsFor: 65,
+                    pointsAgainst: 45,
+                    currentStreak: 2,
+                    bestStreak: 3
+                },
+                'Rubén': {
+                    wins: 4,
+                    losses: 3,
+                    pointsFor: 58,
+                    pointsAgainst: 52,
+                    currentStreak: 1,
+                    bestStreak: 2
+                },
+                'Juan Francisco': {
+                    wins: 3,
+                    losses: 4,
+                    pointsFor: 50,
+                    pointsAgainst: 55,
+                    currentStreak: 0,
+                    bestStreak: 2
+                }
+            },
+            playerPhotos: {}
+        };
+        
+        const jsonStr = JSON.stringify(sampleData, null, 2);
+        downloadFile(jsonStr, 'sample-tournament-data.json', 'application/json');
+        showMessage('Archivo de ejemplo descargado', 'success');
+    }
+
     // Función auxiliar para mezclar array
     function shuffleArray(array) {
         const newArray = [...array];
@@ -1291,6 +1423,68 @@
             [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
         }
         return newArray;
+    }
+
+    // Mostrar información de depuración
+    function showDebugInfo() {
+        console.log('Estado actual de la aplicación:', appState);
+        console.log('Datos en localStorage:', localStorage.getItem('pingpongTournament'));
+        alert('Estado actual enviado a la consola. Presiona F12 para ver los detalles.');
+    }
+
+    // Reparar datos corruptos
+    function fixData() {
+        try {
+            // Asegurar estructura mínima
+            if (!appState.players || !Array.isArray(appState.players) || appState.players.length < 3) {
+                appState.players = ['Jesús', 'Rubén', 'Juan Francisco'];
+            }
+            
+            if (!appState.history || !Array.isArray(appState.history)) {
+                appState.history = [];
+            }
+            
+            if (!appState.playerStats || typeof appState.playerStats !== 'object') {
+                appState.playerStats = {};
+            }
+            
+            if (!appState.playerPhotos || typeof appState.playerPhotos !== 'object') {
+                appState.playerPhotos = {};
+            }
+            
+            if (!appState.currentMatch || typeof appState.currentMatch !== 'object') {
+                appState.currentMatch = {
+                    player1: '',
+                    player2: '',
+                    score1: 0,
+                    score2: 0,
+                    waiting: ''
+                };
+            }
+            
+            // Reinicializar partido si es necesario
+            if (!appState.currentMatch.player1 || !appState.currentMatch.player2 || !appState.currentMatch.waiting) {
+                const shuffled = shuffleArray([...appState.players]);
+                appState.currentMatch = {
+                    player1: shuffled[0],
+                    player2: shuffled[1],
+                    score1: appState.currentMatch.score1 || 0,
+                    score2: appState.currentMatch.score2 || 0,
+                    waiting: shuffled[2]
+                };
+            }
+            
+            saveData();
+            updateDisplay();
+            updateStats();
+            updateHistory();
+            updatePlayersList();
+            
+            showMessage('✅ Datos reparados exitosamente', 'success');
+        } catch (error) {
+            console.error('Error al reparar datos:', error);
+            showMessage('Error al reparar datos: ' + error.message, 'error');
+        }
     }
 
     // Prevenir cierre de modal al hacer clic fuera
