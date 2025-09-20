@@ -14,7 +14,8 @@
             --danger: #FF6B6B;
             --dark: #2d3748;
             --light: #f7fafc;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --glass: rgba(255, 255, 255, 0.95);
         }
 
 ```
@@ -26,10 +27,31 @@
 
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
         padding: 20px;
         color: var(--dark);
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* Animación de fondo */
+    body::before {
+        content: '';
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: backgroundMove 20s linear infinite;
+        z-index: -1;
+    }
+
+    @keyframes backgroundMove {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(50px, 50px); }
     }
 
     .container {
@@ -45,34 +67,171 @@
     }
 
     .header h1 {
-        font-size: 2.5em;
+        font-size: 3em;
         margin-bottom: 10px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+        letter-spacing: 2px;
     }
 
     .header p {
-        font-size: 1.1em;
+        font-size: 1.2em;
         opacity: 0.95;
     }
 
     .card {
-        background: white;
-        border-radius: 15px;
-        padding: 25px;
-        margin-bottom: 20px;
+        background: var(--glass);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 25px;
         box-shadow: var(--shadow);
         animation: fadeIn 0.5s ease;
+        border: 1px solid rgba(255,255,255,0.3);
     }
 
+    /* Selector de Jugadores Mejorado */
+    .player-selector {
+        background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        border: 2px dashed rgba(102,126,234,0.3);
+    }
+
+    .player-selector h3 {
+        text-align: center;
+        color: var(--primary);
+        margin-bottom: 20px;
+        font-size: 1.3em;
+    }
+
+    .players-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .player-card {
+        background: white;
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 3px solid transparent;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    .player-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(102,126,234,0.3);
+    }
+
+    .player-card.selected-player1 {
+        border-color: var(--primary);
+        background: linear-gradient(135deg, rgba(102,126,234,0.2) 0%, rgba(102,126,234,0.1) 100%);
+        transform: scale(1.05);
+    }
+
+    .player-card.selected-player2 {
+        border-color: var(--secondary);
+        background: linear-gradient(135deg, rgba(118,75,162,0.2) 0%, rgba(118,75,162,0.1) 100%);
+        transform: scale(1.05);
+    }
+
+    .player-card.selected-waiting {
+        border-color: var(--warning);
+        background: linear-gradient(135deg, rgba(255,193,7,0.2) 0%, rgba(255,193,7,0.1) 100%);
+    }
+
+    .player-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        margin: 0 auto 10px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8em;
+        color: white;
+    }
+
+    .player-card-name {
+        font-weight: bold;
+        color: var(--dark);
+        margin-bottom: 5px;
+    }
+
+    .player-role {
+        font-size: 0.8em;
+        color: #666;
+        padding: 3px 8px;
+        border-radius: 12px;
+        background: var(--light);
+        display: inline-block;
+        margin-top: 5px;
+    }
+
+    .selection-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .selection-btn {
+        padding: 10px 20px;
+        border: 2px solid var(--primary);
+        background: white;
+        color: var(--primary);
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 600;
+    }
+
+    .selection-btn:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102,126,234,0.3);
+    }
+
+    .selection-btn.active {
+        background: var(--primary);
+        color: white;
+    }
+
+    /* Match Display Mejorado */
     .match-display {
         display: flex;
         justify-content: space-around;
         align-items: center;
         flex-wrap: wrap;
-        padding: 20px;
-        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-        border-radius: 10px;
-        margin-bottom: 20px;
+        padding: 30px;
+        background: linear-gradient(135deg, rgba(102,126,234,0.05) 0%, rgba(118,75,162,0.05) 100%);
+        border-radius: 20px;
+        margin-bottom: 25px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .match-display::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(102,126,234,0.1) 0%, transparent 70%);
+        animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.1); opacity: 0.8; }
     }
 
     .player-section {
@@ -80,146 +239,345 @@
         flex: 1;
         min-width: 150px;
         padding: 15px;
+        z-index: 1;
     }
 
     .player-photo {
-        width: 120px;
-        height: 120px;
+        width: 140px;
+        height: 140px;
         border-radius: 50%;
-        margin: 0 auto 10px;
-        border: 4px solid var(--primary);
+        margin: 0 auto 15px;
+        border: 5px solid var(--primary);
         object-fit: cover;
         cursor: pointer;
-        transition: transform 0.3s;
-        background: #f0f0f0;
+        transition: all 0.3s;
+        background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 3em;
+        font-size: 3.5em;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        position: relative;
     }
 
     .player-photo:hover {
-        transform: scale(1.05);
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 12px 30px rgba(102,126,234,0.4);
+    }
+
+    .player-photo::after {
+        content: '📷';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: var(--primary);
+        color: white;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.5em;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .player-photo:hover::after {
+        opacity: 1;
     }
 
     .player-name {
-        font-size: 1.3em;
+        font-size: 1.5em;
         font-weight: bold;
         color: var(--dark);
-        margin-bottom: 10px;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
     .score-display {
-        font-size: 3em;
+        font-size: 4em;
         font-weight: bold;
-        color: var(--primary);
-        margin: 10px 0;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 15px 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .vs-indicator {
+        font-size: 3.5em;
+        font-weight: bold;
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: vsAnimation 2s ease-in-out infinite;
+    }
+
+    @keyframes vsAnimation {
+        0%, 100% { transform: scale(1) rotate(0deg); }
+        50% { transform: scale(1.2) rotate(10deg); }
     }
 
     .score-controls {
         display: flex;
         justify-content: center;
-        gap: 10px;
-        margin-top: 10px;
+        gap: 15px;
+        margin-top: 15px;
     }
 
     .btn {
-        background: var(--primary);
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
         color: white;
         border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
+        padding: 12px 25px;
+        border-radius: 25px;
         cursor: pointer;
         font-size: 1em;
+        font-weight: 600;
         transition: all 0.3s;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
     .btn:hover {
-        background: var(--secondary);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102,126,234,0.4);
     }
 
     .btn-small {
-        padding: 5px 10px;
+        padding: 8px 15px;
         font-size: 0.9em;
     }
 
     .btn-success {
-        background: var(--success);
+        background: linear-gradient(135deg, var(--success), #45a049);
     }
 
     .btn-danger {
-        background: var(--danger);
+        background: linear-gradient(135deg, var(--danger), #ff5252);
     }
 
     .btn-warning {
-        background: var(--warning);
-        color: var(--dark);
+        background: linear-gradient(135deg, var(--warning), #ffb300);
     }
 
+    /* Waiting Player Mejorado */
     .waiting-player {
         text-align: center;
-        padding: 20px;
-        background: var(--light);
-        border-radius: 10px;
-        margin-top: 20px;
+        padding: 25px;
+        background: linear-gradient(135deg, rgba(255,193,7,0.1) 0%, rgba(255,193,7,0.05) 100%);
+        border-radius: 15px;
+        margin-top: 25px;
+        border: 2px solid rgba(255,193,7,0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .waiting-player::before {
+        content: '⏳';
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 2em;
+        opacity: 0.3;
+        animation: rotate 2s linear infinite;
+    }
+
+    @keyframes rotate {
+        0% { transform: translateY(-50%) rotate(0deg); }
+        100% { transform: translateY(-50%) rotate(360deg); }
     }
 
     .waiting-player h3 {
-        color: var(--secondary);
+        color: var(--warning);
         margin-bottom: 10px;
+        font-size: 1.2em;
     }
 
+    .waiting-player .player-name {
+        font-size: 1.8em;
+        color: var(--dark);
+    }
+
+    /* Resto de estilos originales con mejoras visuales... */
+    .tabs {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 25px;
+        background: var(--light);
+        padding: 5px;
+        border-radius: 15px;
+    }
+
+    .tab {
+        padding: 12px 25px;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        font-size: 1em;
+        color: var(--dark);
+        transition: all 0.3s;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .tab:hover {
+        background: rgba(102,126,234,0.1);
+    }
+
+    .tab.active {
+        background: var(--primary);
+        color: white;
+        box-shadow: 0 3px 10px rgba(102,126,234,0.3);
+    }
+
+    @media (max-width: 768px) {
+        .header h1 {
+            font-size: 2em;
+        }
+
+        .score-display {
+            font-size: 3em;
+        }
+
+        .match-display {
+            flex-direction: column;
+        }
+
+        .players-grid {
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        }
+    }
+
+    /* Animaciones adicionales */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideDown {
+        from { 
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Mensaje divertido mejorado */
+    .funny-message {
+        background: linear-gradient(135deg, #FF6B6B 0%, #ffc107 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        margin-top: 25px;
+        text-align: center;
+        font-size: 1.2em;
+        font-weight: 600;
+        box-shadow: 0 8px 20px rgba(255,107,107,0.3);
+        animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(-10px) scale(1.05); }
+    }
+
+    .message {
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-top: 20px;
+        animation: slideUp 0.5s;
+        font-weight: 600;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .message.success {
+        background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
+        color: #22543d;
+        border-left: 5px solid var(--success);
+    }
+
+    .message.error {
+        background: linear-gradient(135deg, #fed7d7, #fc8181);
+        color: #742a2a;
+        border-left: 5px solid var(--danger);
+    }
+
+    /* Estadísticas mejoradas */
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-        margin-top: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 25px;
     }
 
     .stat-card {
-        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-        padding: 15px;
-        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
+        padding: 20px;
+        border-radius: 15px;
         text-align: center;
-        border-left: 4px solid var(--primary);
+        border-left: 5px solid var(--primary);
+        transition: all 0.3s;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(102,126,234,0.2);
     }
 
     .stat-card h4 {
         color: var(--secondary);
-        margin-bottom: 5px;
-        font-size: 0.9em;
+        margin-bottom: 10px;
+        font-size: 1em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
     .stat-card .value {
-        font-size: 1.8em;
+        font-size: 2.2em;
         font-weight: bold;
-        color: var(--primary);
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
+    /* Tabla de historial mejorada */
     .history-table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 20px;
+        margin-top: 25px;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
     }
 
     .history-table th {
-        background: var(--primary);
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
         color: white;
-        padding: 12px;
+        padding: 15px;
         text-align: left;
         font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9em;
     }
 
     .history-table td {
-        padding: 10px 12px;
+        padding: 12px 15px;
         border-bottom: 1px solid #e2e8f0;
     }
 
     .history-table tr:hover {
-        background: #f7fafc;
+        background: linear-gradient(135deg, rgba(102,126,234,0.05) 0%, rgba(118,75,162,0.05) 100%);
     }
 
     .winner {
@@ -231,40 +589,7 @@
         color: var(--danger);
     }
 
-    .player-stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-        margin-top: 20px;
-    }
-
-    .player-stat-card {
-        background: white;
-        border-radius: 10px;
-        padding: 20px;
-        border: 2px solid var(--light);
-        transition: all 0.3s;
-    }
-
-    .player-stat-card:hover {
-        border-color: var(--primary);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
-    }
-
-    .player-stat-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 15px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid var(--light);
-    }
-
-    .win-rate {
-        font-size: 1.5em;
-        font-weight: bold;
-    }
-
+    /* Modal mejorado */
     .modal {
         display: none;
         position: fixed;
@@ -273,69 +598,98 @@
         top: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
         animation: fadeIn 0.3s;
     }
 
     .modal-content {
-        background-color: white;
-        margin: 10% auto;
-        padding: 30px;
-        border-radius: 15px;
+        background: white;
+        margin: 5% auto;
+        padding: 35px;
+        border-radius: 20px;
         width: 90%;
         max-width: 500px;
         animation: slideUp 0.3s;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    @keyframes slideUp {
+        from { 
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .close {
         color: #aaa;
         float: right;
-        font-size: 28px;
+        font-size: 32px;
         font-weight: bold;
         cursor: pointer;
+        transition: all 0.3s;
     }
 
     .close:hover {
         color: var(--danger);
+        transform: rotate(90deg);
     }
 
-    .tabs {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-        border-bottom: 2px solid var(--light);
+    /* Player stats mejorados */
+    .player-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 25px;
+        margin-top: 25px;
     }
 
-    .tab {
-        padding: 10px 20px;
-        cursor: pointer;
-        border: none;
-        background: none;
-        font-size: 1em;
-        color: var(--dark);
+    .player-stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        border: 2px solid var(--light);
         transition: all 0.3s;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
     }
 
-    .tab.active {
-        color: var(--primary);
-        border-bottom: 3px solid var(--primary);
-        margin-bottom: -2px;
+    .player-stat-card:hover {
+        border-color: var(--primary);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        transform: translateY(-5px);
     }
 
-    .tab-content {
-        display: none;
-        animation: fadeIn 0.5s;
+    .player-stat-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid var(--light);
     }
 
-    .tab-content.active {
-        display: block;
+    .win-rate {
+        font-size: 1.8em;
+        font-weight: bold;
+    }
+
+    /* Botones de exportación mejorados */
+    .export-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 25px;
+        flex-wrap: wrap;
     }
 
     .file-input-wrapper {
         position: relative;
         overflow: hidden;
         display: inline-block;
-        margin-top: 10px;
+        margin-top: 15px;
     }
 
     .file-input-wrapper input[type=file] {
@@ -344,104 +698,32 @@
     }
 
     .file-input-wrapper label {
-        background: var(--primary);
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
         color: white;
-        padding: 10px 20px;
-        border-radius: 8px;
+        padding: 12px 25px;
+        border-radius: 25px;
         cursor: pointer;
         display: inline-block;
         transition: all 0.3s;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(102,126,234,0.3);
     }
 
     .file-input-wrapper label:hover {
-        background: var(--secondary);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102,126,234,0.4);
     }
 
-    .message {
-        padding: 15px;
-        border-radius: 8px;
-        margin-top: 20px;
-        animation: slideUp 0.5s;
+    /* Tab content */
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.5s;
     }
 
-    .message.success {
-        background: #c6f6d5;
-        color: #22543d;
-        border-left: 4px solid var(--success);
-    }
-
-    .message.error {
-        background: #fed7d7;
-        color: #742a2a;
-        border-left: 4px solid var(--danger);
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    @keyframes slideDown {
-        from { 
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-        to { 
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @keyframes slideUp {
-        from { 
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to { 
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @media (max-width: 768px) {
-        .header h1 {
-            font-size: 1.8em;
-        }
-
-        .score-display {
-            font-size: 2em;
-        }
-
-        .match-display {
-            flex-direction: column;
-        }
-
-        .player-section {
-            margin-bottom: 20px;
-        }
-    }
-
-    .funny-message {
-        background: linear-gradient(135deg, #FF6B6B 0%, #ffc107 100%);
-        color: white;
-        padding: 15px;
-        border-radius: 10px;
-        margin-top: 20px;
-        text-align: center;
-        font-size: 1.1em;
-        animation: bounce 2s infinite;
-    }
-
-    @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-5px); }
-    }
-
-    .export-buttons {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        margin-top: 20px;
+    .tab-content.active {
+        display: block;
     }
 </style>
 ```
@@ -455,9 +737,41 @@
         </div>
 
 ```
+    <!-- Selector de Jugadores -->
+    <div class="card">
+        <div class="player-selector">
+            <h3>⚡ Selector Rápido de Jugadores</h3>
+            
+            <div class="selection-buttons">
+                <button class="selection-btn active" id="select-player1-btn" onclick="setSelectionMode('player1')">
+                    🎮 Seleccionar Jugador 1
+                </button>
+                <button class="selection-btn" id="select-player2-btn" onclick="setSelectionMode('player2')">
+                    🎯 Seleccionar Jugador 2
+                </button>
+                <button class="selection-btn" id="select-waiting-btn" onclick="setSelectionMode('waiting')">
+                    ⏳ Seleccionar Jugador en Espera
+                </button>
+            </div>
+
+            <div class="players-grid" id="players-selector-grid">
+                <!-- Los jugadores se cargarán dinámicamente aquí -->
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-success" onclick="applyPlayerSelection()">
+                    ✅ Aplicar Selección
+                </button>
+                <button class="btn btn-warning" onclick="randomizeSelection()">
+                    🎲 Selección Aleatoria
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Partido Actual -->
     <div class="card">
-        <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary);">⚔️ Partido en Curso</h2>
+        <h2 style="text-align: center; margin-bottom: 25px; color: var(--primary); font-size: 1.8em;">⚔️ Partido en Curso</h2>
         
         <div class="match-display">
             <div class="player-section">
@@ -467,18 +781,10 @@
                 <div class="score-controls">
                     <button class="btn btn-small btn-success" onclick="updateScore('player1', 1)">+1</button>
                     <button class="btn btn-small btn-danger" onclick="updateScore('player1', -1)">-1</button>
-                <div style="margin-top: 30px;">
-                <h4>🔧 Depuración</h4>
-                <button class="btn" onclick="showDebugInfo()">
-                    Ver Estado Actual
-                </button>
-                <button class="btn" onclick="fixData()">
-                    🔧 Reparar Datos
-                </button>
-            </div>
+                </div>
             </div>
 
-            <div style="font-size: 3em; color: var(--secondary);">VS</div>
+            <div class="vs-indicator">VS</div>
 
             <div class="player-section">
                 <div class="player-photo" id="player2-photo" onclick="uploadPhoto('player2')">👤</div>
@@ -496,8 +802,8 @@
             <div class="player-name" id="waiting-player">Esperando...</div>
         </div>
 
-        <div style="text-align: center; margin-top: 20px;">
-            <button class="btn btn-success" onclick="finishMatch()" style="padding: 12px 30px; font-size: 1.1em;">
+        <div style="text-align: center; margin-top: 25px;">
+            <button class="btn btn-success" onclick="finishMatch()" style="padding: 15px 40px; font-size: 1.2em;">
                 🏆 Finalizar Partido
             </button>
         </div>
@@ -508,10 +814,10 @@
     <!-- Pestañas -->
     <div class="card">
         <div class="tabs">
-            <button class="tab active" onclick="showTab('stats')">📊 Estadísticas</button>
-            <button class="tab" onclick="showTab('history')">📜 Historial</button>
-            <button class="tab" onclick="showTab('players')">👥 Jugadores</button>
-            <button class="tab" onclick="showTab('settings')">⚙️ Configuración</button>
+            <button class="tab active" onclick="showTab('stats', event)">📊 Estadísticas</button>
+            <button class="tab" onclick="showTab('history', event)">📜 Historial</button>
+            <button class="tab" onclick="showTab('players', event)">👥 Jugadores</button>
+            <button class="tab" onclick="showTab('settings', event)">⚙️ Configuración</button>
         </div>
 
         <!-- Estadísticas -->
@@ -568,7 +874,7 @@
             <h3>Gestión de Jugadores</h3>
             <div style="margin-top: 20px;">
                 <input type="text" id="player-name-input" placeholder="Nombre del jugador" 
-                       style="padding: 10px; border: 2px solid var(--light); border-radius: 8px; margin-right: 10px;">
+                       style="padding: 12px; border: 2px solid var(--light); border-radius: 10px; margin-right: 10px; width: 250px;">
                 <button class="btn" onclick="addPlayer()">➕ Agregar Jugador</button>
             </div>
             <div id="players-list" style="margin-top: 20px;"></div>
@@ -585,7 +891,7 @@
                     <label for="import-file">Seleccionar archivo JSON</label>
                     <input type="file" id="import-file" accept=".json" onchange="importData(event)">
                 </div>
-                <div style="margin-top: 10px;">
+                <div style="margin-top: 15px;">
                     <button class="btn btn-warning" onclick="downloadSampleFile()">
                         📄 Descargar Archivo de Ejemplo
                     </button>
@@ -612,6 +918,16 @@
                 <p style="color: #666; margin: 10px 0;">Esta acción borrará todos los datos del torneo.</p>
                 <button class="btn btn-danger" onclick="resetTournament()">
                     ⚠️ Resetear Todo
+                </button>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <h4>🔧 Depuración</h4>
+                <button class="btn" onclick="showDebugInfo()">
+                    Ver Estado Actual
+                </button>
+                <button class="btn" onclick="fixData()">
+                    🔧 Reparar Datos
                 </button>
             </div>
         </div>
@@ -647,7 +963,13 @@
         history: [],
         playerPhotos: {},
         playerStats: {},
-        currentPhotoPlayer: null
+        currentPhotoPlayer: null,
+        selectionMode: 'player1',
+        tempSelection: {
+            player1: null,
+            player2: null,
+            waiting: null
+        }
     };
 
     // Inicialización
@@ -658,6 +980,7 @@
         updateStats();
         updateHistory();
         updatePlayersList();
+        updatePlayerSelector();
     });
 
     // Cargar datos del localStorage
@@ -667,6 +990,14 @@
             try {
                 const data = JSON.parse(savedData);
                 appState = { ...appState, ...data };
+                // Asegurar que tempSelection existe
+                if (!appState.tempSelection) {
+                    appState.tempSelection = {
+                        player1: null,
+                        player2: null,
+                        waiting: null
+                    };
+                }
             } catch (e) {
                 console.error('Error loading data:', e);
             }
@@ -676,6 +1007,137 @@
     // Guardar datos en localStorage
     function saveData() {
         localStorage.setItem('pingpongTournament', JSON.stringify(appState));
+    }
+
+    // Actualizar selector de jugadores
+    function updatePlayerSelector() {
+        const grid = document.getElementById('players-selector-grid');
+        const match = appState.currentMatch;
+        
+        grid.innerHTML = appState.players.map(player => {
+            let role = '';
+            let classes = ['player-card'];
+            
+            // Determinar el rol actual del jugador
+            if (appState.tempSelection.player1 === player) {
+                classes.push('selected-player1');
+                role = 'Jugador 1';
+            } else if (appState.tempSelection.player2 === player) {
+                classes.push('selected-player2');
+                role = 'Jugador 2';
+            } else if (appState.tempSelection.waiting === player) {
+                classes.push('selected-waiting');
+                role = 'En Espera';
+            }
+            
+            const photoUrl = appState.playerPhotos[player];
+            const avatarContent = photoUrl ? 
+                `<div class="player-avatar" style="background-image: url(${photoUrl}); background-size: cover; background-position: center;"></div>` :
+                `<div class="player-avatar">${player.charAt(0).toUpperCase()}</div>`;
+            
+            return `
+                <div class="${classes.join(' ')}" onclick="selectPlayerForMatch('${player}')">
+                    ${avatarContent}
+                    <div class="player-card-name">${player}</div>
+                    ${role ? `<div class="player-role">${role}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Establecer modo de selección
+    function setSelectionMode(mode) {
+        appState.selectionMode = mode;
+        
+        // Actualizar botones
+        document.querySelectorAll('.selection-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`select-${mode}-btn`).classList.add('active');
+        
+        // Mensaje de ayuda
+        let message = '';
+        switch(mode) {
+            case 'player1':
+                message = 'Selecciona el Jugador 1';
+                break;
+            case 'player2':
+                message = 'Selecciona el Jugador 2';
+                break;
+            case 'waiting':
+                message = 'Selecciona el Jugador en Espera';
+                break;
+        }
+        showMessage(message, 'success');
+    }
+
+    // Seleccionar jugador para el partido
+    function selectPlayerForMatch(player) {
+        const mode = appState.selectionMode;
+        
+        // Verificar que no se seleccione el mismo jugador para diferentes roles
+        if (mode === 'player1') {
+            if (player === appState.tempSelection.player2 || player === appState.tempSelection.waiting) {
+                showMessage('Este jugador ya está seleccionado para otro rol', 'error');
+                return;
+            }
+            appState.tempSelection.player1 = player;
+            // Automáticamente cambiar al siguiente modo
+            if (!appState.tempSelection.player2) {
+                setSelectionMode('player2');
+            } else if (!appState.tempSelection.waiting) {
+                setSelectionMode('waiting');
+            }
+        } else if (mode === 'player2') {
+            if (player === appState.tempSelection.player1 || player === appState.tempSelection.waiting) {
+                showMessage('Este jugador ya está seleccionado para otro rol', 'error');
+                return;
+            }
+            appState.tempSelection.player2 = player;
+            // Automáticamente cambiar al modo de espera
+            if (!appState.tempSelection.waiting) {
+                setSelectionMode('waiting');
+            }
+        } else if (mode === 'waiting') {
+            if (player === appState.tempSelection.player1 || player === appState.tempSelection.player2) {
+                showMessage('Este jugador ya está seleccionado para otro rol', 'error');
+                return;
+            }
+            appState.tempSelection.waiting = player;
+        }
+        
+        updatePlayerSelector();
+    }
+
+    // Aplicar selección de jugadores
+    function applyPlayerSelection() {
+        const temp = appState.tempSelection;
+        
+        if (!temp.player1 || !temp.player2 || !temp.waiting) {
+            showMessage('Debes seleccionar los 3 jugadores', 'error');
+            return;
+        }
+        
+        // Aplicar la selección al partido actual
+        appState.currentMatch.player1 = temp.player1;
+        appState.currentMatch.player2 = temp.player2;
+        appState.currentMatch.waiting = temp.waiting;
+        appState.currentMatch.score1 = 0;
+        appState.currentMatch.score2 = 0;
+        
+        saveData();
+        updateDisplay();
+        showMessage('✅ Jugadores seleccionados correctamente', 'success');
+    }
+
+    // Selección aleatoria
+    function randomizeSelection() {
+        const shuffled = shuffleArray([...appState.players]);
+        
+        appState.tempSelection.player1 = shuffled[0];
+        appState.tempSelection.player2 = shuffled[1];
+        appState.tempSelection.waiting = shuffled[2];
+        
+        updatePlayerSelector();
+        showMessage('🎲 Selección aleatoria realizada', 'success');
     }
 
     // Inicializar partido
@@ -689,7 +1151,22 @@
                 score2: 0,
                 waiting: shuffled[2]
             };
+            
+            // Inicializar tempSelection con la selección actual
+            appState.tempSelection = {
+                player1: shuffled[0],
+                player2: shuffled[1],
+                waiting: shuffled[2]
+            };
+            
             saveData();
+        } else {
+            // Sincronizar tempSelection con el partido actual
+            appState.tempSelection = {
+                player1: appState.currentMatch.player1,
+                player2: appState.currentMatch.player2,
+                waiting: appState.currentMatch.waiting
+            };
         }
     }
 
@@ -756,10 +1233,18 @@
             waiting: loser
         };
 
+        // Actualizar tempSelection
+        appState.tempSelection = {
+            player1: winner,
+            player2: match.waiting,
+            waiting: loser
+        };
+
         saveData();
         updateDisplay();
         updateStats();
         updateHistory();
+        updatePlayerSelector();
         
         showMessage(`🏆 ¡${winner} ha ganado ${winnerScore}-${loserScore}!`, 'success');
     }
@@ -841,6 +1326,7 @@
                 appState.playerPhotos[playerName] = e.target.result;
                 saveData();
                 updateDisplay();
+                updatePlayerSelector();
                 
                 // Mostrar preview
                 const preview = document.getElementById('photo-preview');
@@ -982,7 +1468,7 @@
     }
 
     // Mostrar pestaña
-    function showTab(tabName) {
+    function showTab(tabName, event) {
         // Ocultar todas las pestañas
         document.querySelectorAll('.tab-content').forEach(content => {
             content.classList.remove('active');
@@ -1015,6 +1501,7 @@
         input.value = '';
         saveData();
         updatePlayersList();
+        updatePlayerSelector();
         showMessage(`Jugador ${name} agregado exitosamente`, 'success');
     }
 
@@ -1024,7 +1511,7 @@
         container.innerHTML = '<h4>Jugadores Activos:</h4>' + 
             appState.players.map(player => `
                 <div style="display: inline-block; margin: 5px;">
-                    <span style="padding: 8px 15px; background: var(--light); border-radius: 20px; margin-right: 10px;">
+                    <span style="padding: 10px 18px; background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); border-radius: 25px; margin-right: 10px; font-weight: 600;">
                         ${player}
                     </span>
                     ${appState.players.length > 3 ? 
@@ -1052,6 +1539,7 @@
             appState.players = appState.players.filter(p => p !== player);
             saveData();
             updatePlayersList();
+            updatePlayerSelector();
             showMessage(`Jugador ${player} eliminado`, 'success');
         }
     }
@@ -1070,7 +1558,13 @@
                 },
                 history: [],
                 playerPhotos: {},
-                playerStats: {}
+                playerStats: {},
+                selectionMode: 'player1',
+                tempSelection: {
+                    player1: null,
+                    player2: null,
+                    waiting: null
+                }
             };
             
             saveData();
@@ -1079,12 +1573,13 @@
             updateStats();
             updateHistory();
             updatePlayersList();
+            updatePlayerSelector();
             
             showMessage('✅ Torneo reiniciado exitosamente', 'success');
         }
     }
 
-    // Exportar datos
+    // Exportar datos (mantener función existente)
     function exportData(format) {
         const data = {
             tournament: 'Ping Pong Tournament',
@@ -1113,7 +1608,7 @@
         showMessage(`Datos exportados en formato ${format.toUpperCase()}`, 'success');
     }
 
-    // Generar reporte HTML
+    // Generar reporte HTML (mantener función existente)
     function generateHTMLReport(data) {
         const stats = calculateStats();
         
@@ -1124,88 +1619,102 @@
                 <title>Reporte del Torneo de Ping Pong</title>
                 <meta charset="UTF-8">
                 <style>
-                    body { font-family: Arial, sans-serif; padding: 20px; }
-                    h1 { color: #667eea; }
+                    body { font-family: Arial, sans-serif; padding: 20px; background: linear-gradient(135deg, #667eea, #764ba2); }
+                    .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; }
+                    h1 { color: #667eea; text-align: center; }
                     table { border-collapse: collapse; width: 100%; margin: 20px 0; }
-                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                    th { background: #667eea; color: white; }
+                    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+                    th { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+                    tr:hover { background: rgba(102,126,234,0.05); }
                     .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
-                    .stat-box { background: #f0f0f0; padding: 15px; border-radius: 8px; }
+                    .stat-box { background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); padding: 20px; border-radius: 10px; text-align: center; }
+                    .stat-box strong { color: #667eea; }
+                    .value { font-size: 2em; font-weight: bold; color: #764ba2; }
                 </style>
             </head>
             <body>
-                <h1>🏓 Reporte del Torneo de Ping Pong</h1>
-                <p>Fecha de exportación: ${new Date().toLocaleString('es-ES')}</p>
-                
-                <h2>Estadísticas Generales</h2>
-                <div class="stats">
-                    <div class="stat-box">
-                        <strong>Rey del Torneo:</strong><br>${stats.topPlayer || '-'} (${stats.topPlayerWins} victorias)
+                <div class="container">
+                    <h1>🏓 Reporte del Torneo de Ping Pong</h1>
+                    <p style="text-align: center;">Fecha de exportación: ${new Date().toLocaleString('es-ES')}</p>
+                    
+                    <h2>Estadísticas Generales</h2>
+                    <div class="stats">
+                        <div class="stat-box">
+                            <strong>👑 Rey del Torneo</strong><br>
+                            <div class="value">${stats.topPlayer || '-'}</div>
+                            <small>${stats.topPlayerWins} victorias</small>
+                        </div>
+                        <div class="stat-box">
+                            <strong>🔥 Mejor Racha</strong><br>
+                            <div class="value">${stats.bestStreakPlayer || '-'}</div>
+                            <small>${stats.bestStreakCount} partidos</small>
+                        </div>
+                        <div class="stat-box">
+                            <strong>🏓 Total de Partidos</strong><br>
+                            <div class="value">${data.history.length}</div>
+                        </div>
+                        <div class="stat-box">
+                            <strong>🎯 Total de Puntos</strong><br>
+                            <div class="value">${stats.totalPoints}</div>
+                        </div>
                     </div>
-                    <div class="stat-box">
-                        <strong>Mejor Racha:</strong><br>${stats.bestStreakPlayer || '-'} (${stats.bestStreakCount} partidos)
-                    </div>
-                    <div class="stat-box">
-                        <strong>Total de Partidos:</strong><br>${data.history.length}
-                    </div>
-                    <div class="stat-box">
-                        <strong>Total de Puntos:</strong><br>${stats.totalPoints}
-                    </div>
-                </div>
-                
-                <h2>Historial de Partidos</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Ganador</th>
-                            <th>Perdedor</th>
-                            <th>Resultado</th>
-                            <th>Fecha</th>
-                            <th>Hora</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${data.history.map(match => `
+                    
+                    <h2>Historial de Partidos</h2>
+                    <table>
+                        <thead>
                             <tr>
-                                <td>${match.winner}</td>
-                                <td>${match.loser}</td>
-                                <td>${match.winnerScore} - ${match.loserScore}</td>
-                                <td>${match.date}</td>
-                                <td>${match.time}</td>
+                                <th>Ganador</th>
+                                <th>Perdedor</th>
+                                <th>Resultado</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
                             </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-                
-                <h2>Estadísticas por Jugador</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Jugador</th>
-                            <th>Victorias</th>
-                            <th>Derrotas</th>
-                            <th>% Victoria</th>
-                            <th>Puntos +/-</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${data.players.map(player => {
-                            const stats = data.playerStats[player] || { wins: 0, losses: 0, pointsFor: 0, pointsAgainst: 0 };
-                            const total = stats.wins + stats.losses;
-                            const winRate = total > 0 ? Math.round((stats.wins / total) * 100) : 0;
-                            const pointsDiff = stats.pointsFor - stats.pointsAgainst;
-                            return `
+                        </thead>
+                        <tbody>
+                            ${data.history.map(match => `
                                 <tr>
-                                    <td>${player}</td>
-                                    <td>${stats.wins}</td>
-                                    <td>${stats.losses}</td>
-                                    <td>${winRate}%</td>
-                                    <td>${pointsDiff > 0 ? '+' : ''}${pointsDiff}</td>
+                                    <td style="color: #4CAF50; font-weight: bold;">${match.winner}</td>
+                                    <td style="color: #FF6B6B;">${match.loser}</td>
+                                    <td>${match.winnerScore} - ${match.loserScore}</td>
+                                    <td>${match.date}</td>
+                                    <td>${match.time}</td>
                                 </tr>
-                            `;
-                        }).join('')}
-                    </tbody>
-                </table>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <h2>Estadísticas por Jugador</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Jugador</th>
+                                <th>Victorias</th>
+                                <th>Derrotas</th>
+                                <th>% Victoria</th>
+                                <th>Puntos +/-</th>
+                                <th>Mejor Racha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.players.map(player => {
+                                const stats = data.playerStats[player] || { wins: 0, losses: 0, pointsFor: 0, pointsAgainst: 0, bestStreak: 0 };
+                                const total = stats.wins + stats.losses;
+                                const winRate = total > 0 ? Math.round((stats.wins / total) * 100) : 0;
+                                const pointsDiff = stats.pointsFor - stats.pointsAgainst;
+                                return `
+                                    <tr>
+                                        <td style="font-weight: bold;">${player}</td>
+                                        <td style="color: #4CAF50;">${stats.wins}</td>
+                                        <td style="color: #FF6B6B;">${stats.losses}</td>
+                                        <td style="font-weight: bold; color: ${winRate >= 50 ? '#4CAF50' : '#FF6B6B'};">${winRate}%</td>
+                                        <td style="font-weight: bold; color: ${pointsDiff >= 0 ? '#4CAF50' : '#FF6B6B'};">${pointsDiff > 0 ? '+' : ''}${pointsDiff}</td>
+                                        <td>${stats.bestStreak}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
             </body>
             </html>
         `;
@@ -1268,11 +1777,19 @@
                     if (!appState.playerStats) appState.playerStats = {};
                     if (!appState.playerPhotos) appState.playerPhotos = {};
                     
+                    // Sincronizar tempSelection
+                    appState.tempSelection = {
+                        player1: appState.currentMatch.player1,
+                        player2: appState.currentMatch.player2,
+                        waiting: appState.currentMatch.waiting
+                    };
+                    
                     saveData();
                     updateDisplay();
                     updateStats();
                     updateHistory();
                     updatePlayersList();
+                    updatePlayerSelector();
                     
                     showMessage('✅ Datos importados exitosamente', 'success');
                 } else {
@@ -1337,7 +1854,10 @@
             `${winner} celebra como si hubiera ganado el mundial. ${loser} planea su venganza 😈`,
             `¡Partidazo! ${winner} sobrevive ${winnerScore}-${loserScore} contra ${loser} 💪`,
             `${loser} dice que la raqueta estaba rota... Sí, claro 🙄`,
-            `${winner} le dedicó la victoria a su mamá. ${loser} llamó a la suya llorando 📞`
+            `${winner} le dedicó la victoria a su mamá. ${loser} llamó a la suya llorando 📞`,
+            `¡${winner} convirtió a ${loser} en su saco de boxeo personal! ${winnerScore}-${loserScore} 🥊`,
+            `${loser} está considerando cambiar de deporte después de este ${winnerScore}-${loserScore} 🎾`,
+            `${winner} acaba de escribir su nombre en la historia. ${loser} lo escribió en su lista negra 📝`
         ];
 
         const message = messages[Math.floor(Math.random() * messages.length)];
@@ -1405,6 +1925,22 @@
                     pointsAgainst: 55,
                     currentStreak: 0,
                     bestStreak: 2
+                },
+                'María': {
+                    wins: 2,
+                    losses: 3,
+                    pointsFor: 40,
+                    pointsAgainst: 45,
+                    currentStreak: 0,
+                    bestStreak: 1
+                },
+                'Carlos': {
+                    wins: 1,
+                    losses: 4,
+                    pointsFor: 35,
+                    pointsAgainst: 50,
+                    currentStreak: 0,
+                    bestStreak: 1
                 }
             },
             playerPhotos: {}
@@ -1462,6 +1998,14 @@
                 };
             }
             
+            if (!appState.tempSelection || typeof appState.tempSelection !== 'object') {
+                appState.tempSelection = {
+                    player1: null,
+                    player2: null,
+                    waiting: null
+                };
+            }
+            
             // Reinicializar partido si es necesario
             if (!appState.currentMatch.player1 || !appState.currentMatch.player2 || !appState.currentMatch.waiting) {
                 const shuffled = shuffleArray([...appState.players]);
@@ -1472,6 +2016,12 @@
                     score2: appState.currentMatch.score2 || 0,
                     waiting: shuffled[2]
                 };
+                
+                appState.tempSelection = {
+                    player1: shuffled[0],
+                    player2: shuffled[1],
+                    waiting: shuffled[2]
+                };
             }
             
             saveData();
@@ -1479,6 +2029,7 @@
             updateStats();
             updateHistory();
             updatePlayersList();
+            updatePlayerSelector();
             
             showMessage('✅ Datos reparados exitosamente', 'success');
         } catch (error) {
